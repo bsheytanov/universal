@@ -1,4 +1,59 @@
 [
+	{
+        "name": "Windows Narrator",
+        "id": "com.microsoft.windows.narrator",
+        "contexts": {
+            "OS": [
+                {
+                    "id": "win32",
+                    "version": ">=5.0"
+                }
+            ]
+        },
+        "settingsHandlers": [
+            {
+                "type": "gpii.windows.registrySettingsHandler",
+                "options": {
+                    "hKey": "HKEY_CURRENT_USER",
+                    "path": "Software\\Microsoft\\Narrator"
+                },
+                "capabilities": [
+                    "applications.com\\.microsoft\\.windows\\.narrator.id"
+                ],
+                "capabilitiesTransformations": {
+                    "CurrentSpeed": {
+                        "expander": {
+                            "type": "fluid.model.transform.value",
+                            "inputPath": "display.screenReader.speechRate",
+                            "outputPath": "value"
+                        },
+                        "dataType": {
+                            "expander": {
+                                "type": "fluid.model.transform.literalValue",
+                                "value": "REG_DWORD"
+                            }
+                        }
+                    }                    
+                }
+            }
+        ],
+        "lifecycleManager": {
+            "start": [ 
+                "setSettings", 
+                {
+                    "type": "gpii.launch.exec",
+                    "command": "${{environment}.SystemRoot}\\System32\\Narrator.exe"
+                }
+            ],
+            "stop": [ {
+                    "type": "gpii.launch.exec",
+                    "command": "${{environment}.SystemRoot}\\System32\\taskkill.exe /f /im Narrator.exe"
+                },
+                "restoreSettings"
+            ]
+        }
+    },
+	
     {
         "name": "Windows Built-in Screen Magnifier",
         "id": "com.microsoft.windows.magnifier",
